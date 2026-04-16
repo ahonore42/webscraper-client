@@ -1,11 +1,48 @@
 "use client"
 
 import { useSession } from "next-auth/react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Key, Database, CheckCircle } from "lucide-react"
+import { Key, Database, CheckCircle, Loader2 } from "lucide-react"
+
+interface ScrapeStats {
+  total: number
+  success: number
+}
+
+interface ApiKeySummary {
+  keys: Array<{ id: string; is_active: boolean }>
+}
 
 export default function DashboardPage() {
   const { data: session } = useSession()
+  const [stats, setStats] = useState<ScrapeStats | null>(null)
+  const [keyCount, setKeyCount] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!session?.user?.accessToken) return
+
+    async function load() {
+      try {
+        const [statsRes, keysRes] = await Promise.all([
+          fetch("/api/scrape/stats"),
+          fetch("/api/auth/keys"),
+        ])
+        if (statsRes.ok) {
+          const s: ScrapeStats = await statsRes.json()
+          setStats(s)
+        }
+        if (keysRes.ok) {
+          const k: ApiKeySummary = await keysRes.json()
+          setKeyCount(k.keys?.filter((k) => k.is_active).length ?? 0)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [session?.user?.accessToken])
 
   return (
     <div className="space-y-8">
@@ -21,7 +58,7 @@ export default function DashboardPage() {
         <StatCard
           title="API Keys"
           description="Active keys"
-          value="0"
+          value={loading ? <Loader2 className="h-5 w-5 animate-spin" /> : String(keyCount ?? 0)}
           icon={<Key className="h-5 w-5 text-zinc-500" />}
           href="/api-keys"
           hrefLabel="Manage keys"
@@ -29,15 +66,23 @@ export default function DashboardPage() {
         <StatCard
           title="Total Scrapes"
           description="All time"
-          value="0"
+          value={loading ? <Loader2 className="h-5 w-5 animate-spin" /> : String(stats?.total ?? 0)}
           icon={<Database className="h-5 w-5 text-zinc-500" />}
           href="/scrape"
           hrefLabel="New scrape"
         />
         <StatCard
           title="Success Rate"
-          description="Last 30 days"
-          value="—"
+          description="All time"
+          value={
+            loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : stats && stats.total > 0 ? (
+              `${Math.round((stats.success / stats.total) * 100)}%`
+            ) : (
+              "—"
+            )
+          }
           icon={<CheckCircle className="h-5 w-5 text-zinc-500" />}
         />
       </div>
@@ -102,7 +147,7 @@ function StatCard({
 }: {
   title: string
   description: string
-  value: string
+  value: React.ReactNode
   icon: React.ReactNode
   href?: string
   hrefLabel?: string

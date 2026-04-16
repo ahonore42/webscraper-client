@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LayoutDashboard, Key, Search, LogOut, ChevronDown } from "lucide-react"
+import { LayoutDashboard, Key, Search, LogOut, ChevronDown, Clock } from "lucide-react"
 
 export default function DashboardLayout({
   children,
@@ -52,6 +52,7 @@ export default function DashboardLayout({
               <NavLink href="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />} label="Dashboard" />
               <NavLink href="/scrape" icon={<Search className="h-4 w-4" />} label="Scrape" />
               <NavLink href="/api-keys" icon={<Key className="h-4 w-4" />} label="API Keys" />
+              <NavLink href="/schedules" icon={<Clock className="h-4 w-4" />} label="Schedules" />
             </div>
           </nav>
 
@@ -84,6 +85,7 @@ export default function DashboardLayout({
         <NavLink href="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />} label="Dashboard" />
         <NavLink href="/scrape" icon={<Search className="h-4 w-4" />} label="Scrape" />
         <NavLink href="/api-keys" icon={<Key className="h-4 w-4" />} label="API Keys" />
+        <NavLink href="/schedules" icon={<Clock className="h-4 w-4" />} label="Schedules" />
       </div>
 
       {/* Content */}

@@ -55,6 +55,8 @@ export default function ApiKeysPage() {
   const [showNewKey, setShowNewKey] = useState(false)
   const [newKeyData, setNewKeyData] = useState<NewKeyResponse | null>(null)
   const [copied, setCopied] = useState(false)
+  const [revokeTarget, setRevokeTarget] = useState<ApiKey | null>(null)
+  const [revoking, setRevoking] = useState(false)
 
   const fetchKeys = useCallback(async () => {
     if (!session?.user?.accessToken) return
@@ -110,6 +112,7 @@ export default function ApiKeysPage() {
 
   async function revokeKey(keyId: string) {
     if (!session?.user?.accessToken) return
+    setRevoking(true)
     try {
       const res = await fetch(`${API_URL}/auth/keys/${keyId}`, {
         method: "DELETE",
@@ -123,6 +126,9 @@ export default function ApiKeysPage() {
       }
     } catch {
       toast.error("Failed to revoke key")
+    } finally {
+      setRevoking(false)
+      setRevokeTarget(null)
     }
   }
 
@@ -265,7 +271,7 @@ export default function ApiKeysPage() {
                         variant="ghost"
                         size="sm"
                         className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => revokeKey(key.id)}
+                        onClick={() => setRevokeTarget(key)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -277,6 +283,36 @@ export default function ApiKeysPage() {
           </Table>
         </Card>
       )}
+
+      {/* Revoke confirmation */}
+      <Dialog
+        open={!!revokeTarget}
+        onOpenChange={(open) => !open && setRevokeTarget(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Revoke API key</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to revoke <strong>{revokeTarget?.name}</strong>?
+              This action cannot be undone and any applications using this key will
+              lose access immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRevokeTarget(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => revokeTarget && revokeKey(revokeTarget.id)}
+              disabled={revoking}
+            >
+              {revoking && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Revoke
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
