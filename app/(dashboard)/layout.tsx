@@ -57,14 +57,12 @@ export default function DashboardLayout({
           </nav>
 
           <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button variant="ghost" size="sm" className="gap-2">
-                  {session.user?.email}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              }
-            />
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-2">
+                {session.user?.email}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{session.user?.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />

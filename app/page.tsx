@@ -116,11 +116,11 @@ export default function LandingPage() {
               </Button>
             ) : (
               <>
-                <Button variant="ghost" size="sm" render={<Link href="/login" />}>
-                  Sign in
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/login">Sign in</Link>
                 </Button>
-                <Button size="sm" render={<Link href="/register" />}>
-                  Get started
+                <Button size="sm" asChild>
+                  <Link href="/register">Get started</Link>
                 </Button>
               </>
             )}
@@ -258,11 +258,11 @@ export default function LandingPage() {
           Create a free account and get your first API key instantly.
         </p>
         <div className="flex gap-3 justify-center">
-          <Button size="lg" render={<Link href="/register" />}>
-            Create free account
+          <Button size="lg" asChild>
+            <Link href="/register">Create free account</Link>
           </Button>
-          <Button size="lg" variant="outline" render={<Link href="/login" />}>
-            Sign in
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/login">Sign in</Link>
           </Button>
         </div>
       </section>

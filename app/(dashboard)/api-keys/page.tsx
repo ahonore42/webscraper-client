@@ -151,9 +151,9 @@ export default function ApiKeysPage() {
         </div>
 
         <Dialog open={showNewKey} onOpenChange={setShowNewKey}>
-          <DialogTrigger
-            render={<Button className="gap-2"><Plus className="h-4 w-4" />New key</Button>}
-          />
+          <DialogTrigger asChild>
+            <Button className="gap-2"><Plus className="h-4 w-4" />New key</Button>
+          </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create API key</DialogTitle>

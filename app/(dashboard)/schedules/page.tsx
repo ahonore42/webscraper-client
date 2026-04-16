@@ -160,14 +160,12 @@ export default function SchedulesPage() {
         </div>
 
         <Dialog open={showCreate} onOpenChange={setShowCreate}>
-          <DialogTrigger
-            render={
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                New schedule
-              </Button>
-            }
-          />
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              New schedule
+            </Button>
+          </DialogTrigger>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Create schedule</DialogTitle>
@@ -284,13 +282,11 @@ export default function SchedulesPage() {
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        }
-                      />
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={() => toggleSchedule(sched)}
