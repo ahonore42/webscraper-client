@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Trash2, Loader2, Globe, Code, Eye } from "lucide-react"
+import { Plus, Trash2, Loader2, Globe, Code, Eye, Copy, Check } from "lucide-react"
 import { toast } from "sonner"
+import ReactMarkdown from "react-markdown"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -43,9 +44,8 @@ export default function ScrapePage() {
   ])
   const [renderJs, setRenderJs] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [polling, setPolling] = useState(false)
   const [result, setResult] = useState<ScrapeResult | null>(null)
-  const [, setJobId] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   async function submitScrape() {
     if (!url || !session?.user?.accessToken) return
@@ -76,33 +76,11 @@ export default function ScrapePage() {
       }
 
       const data: ScrapeResult = await res.json()
-      setJobId(data.job_id)
-      toast.success("Scrape job submitted")
-      pollResult(data.job_id)
+      setResult(data)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to submit scrape")
     } finally {
       setSubmitting(false)
-    }
-  }
-
-  async function pollResult(id: string) {
-    setPolling(true)
-    try {
-      const res = await fetch(`/api/scrape/${id}`)
-      const data: ScrapeResult = await res.json()
-
-      if (data.status === "pending" || data.status === "running") {
-        await new Promise((r) => setTimeout(r, 2000))
-        return pollResult(id)
-      }
-
-      setResult(data)
-      setJobId(null)
-    } catch {
-      toast.error("Failed to poll result")
-    } finally {
-      setPolling(false)
     }
   }
 
@@ -236,7 +214,7 @@ export default function ScrapePage() {
           <CardHeader>
             <CardTitle>Results</CardTitle>
             <CardDescription>
-              {polling ? (
+              {submitting ? (
                 <span className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Scraping...
@@ -255,27 +233,31 @@ export default function ScrapePage() {
               <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900">
                 <p className="text-sm text-red-700 dark:text-red-400">{result.error_message}</p>
               </div>
-            ) : result?.selectors ? (
-              <div className="space-y-4">
-                {result.title && (
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Title</p>
-                    <p className="font-medium text-foreground dark:text-foreground">{result.title}</p>
-                  </div>
-                )}
-                {result.selectors.map((sel, i) => (
-                  <div key={i}>
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">{sel.name}</p>
-                      <Badge variant="secondary" className="text-xs font-normal">
-                        {sel.selector_type}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1 font-mono break-all">
-                      {formatValue(sel.value)}
-                    </p>
-                  </div>
-                ))}
+            ) : result ? (
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3">
+                  <Badge variant="outline" className="font-normal">
+                    {result.status}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="gap-1 text-muted-foreground"
+                    onClick={() => {
+                      navigator.clipboard.writeText(JSON.stringify(result, null, 2))
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    }}
+                  >
+                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                    {copied ? "Copied" : "Copy JSON"}
+                  </Button>
+                </div>
+                <div className="rounded-lg border border-border overflow-hidden text-xs">
+                  <pre className="p-4 text-xs text-foreground overflow-auto max-h-96 whitespace-pre-wrap">
+                    {JSON.stringify(result, null, 2)}
+                  </pre>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
@@ -288,11 +270,4 @@ export default function ScrapePage() {
       </div>
     </div>
   )
-}
-
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return "(empty)"
-  if (Array.isArray(value)) return value.slice(0, 10).join(", ")
-  if (typeof value === "object") return JSON.stringify(value).slice(0, 200)
-  return String(value).slice(0, 200)
 }

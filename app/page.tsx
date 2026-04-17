@@ -36,8 +36,6 @@ export default function LandingPage() {
   const router = useRouter()
   const [url, setUrl] = useState("")
   const [submitting, setSubmitting] = useState(false)
-  const [polling, setPolling] = useState(false)
-  const [result, setResult] = useState<ScrapeResult | null>(null)
   const [showAuthDialog, setShowAuthDialog] = useState(false)
   const [authMode, setAuthMode] = useState<"login" | "register">("register")
 
@@ -50,9 +48,15 @@ export default function LandingPage() {
     }
 
     setSubmitting(true)
-    setResult(null)
 
     try {
+      // Use WEBHOOK_BASE_URL if set (must be reachable from Celery in Docker).
+      // Fall back to window.location.origin for production.
+      const webhookBase = process.env.NEXT_PUBLIC_WEBHOOK_BASE_URL || window.location.origin
+      const callbackUrl = `${webhookBase}/api/webhook/scrape`
+      console.log(`[Landing] Submitting scrape for ${url}`)
+      console.log(`[Landing] callback_url: ${callbackUrl}`)
+
       const res = await fetch("/api/public/scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,10 +64,14 @@ export default function LandingPage() {
           url,
           selectors: [],
           render_js: false,
+          callback_url: callbackUrl,
         }),
       })
 
+      console.log(`[Landing] POST response status: ${res.status}`)
+
       if (res.status === 401 || res.status === 403) {
+        console.log(`[Landing] Auth required, showing dialog`)
         setShowAuthDialog(true)
         setSubmitting(false)
         return
@@ -74,30 +82,14 @@ export default function LandingPage() {
         throw new Error(err.detail || "Scrape failed")
       }
 
-      const data: ScrapeResult = await res.json()
-      pollResult(data.job_id)
+      const data = await res.json()
+      console.log(`[Landing] POST response: status=${data.status}, job_id=${data.job_id}`)
+      // Only store the job_id — we never show pending state, SSE delivers the final result
+      sessionStorage.setItem("pendingScrapeJobId", data.job_id)
+      router.push("/scrape-v1")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Scrape failed")
-      setSubmitting(false)
-    }
-  }
-
-  async function pollResult(jobId: string) {
-    setPolling(true)
-    try {
-      const res = await fetch(`/api/public/scrape/${jobId}`)
-      const data: ScrapeResult = await res.json()
-
-      if (data.status === "pending" || data.status === "running") {
-        await new Promise((r) => setTimeout(r, 2000))
-        return pollResult(jobId)
-      }
-
-      setResult(data)
-    } catch {
-      toast.error("Failed to fetch result")
-    } finally {
-      setPolling(false)
+      console.error(`[Landing] Error:`, err)
       setSubmitting(false)
     }
   }
@@ -135,78 +127,19 @@ export default function LandingPage() {
                 className="flex-1"
                 onKeyDown={(e) => e.key === "Enter" && handlePublicScrape()}
               />
-              <Button onClick={handlePublicScrape} disabled={submitting || polling} className="shrink-0">
-                {submitting || polling ? (
+              <Button onClick={handlePublicScrape} disabled={submitting} className="shrink-0">
+                {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Globe className="h-4 w-4" />
                 )}
               </Button>
             </div>
-            {(submitting || polling) && (
+            {submitting && (
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Loader2 className="h-3 w-3 animate-spin" />
-                {polling ? "Scraping..." : "Submitting..."}
+                Submitting...
               </p>
-            )}
-            {result && (
-              <div className="p-3 rounded-lg border border-border bg-muted/30 text-left">
-                {result.error_message ? (
-                  <p className="text-sm text-destructive">{result.error_message}</p>
-                ) : (
-                  <div className="space-y-3">
-                    {result.title && (
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Title</p>
-                        <p className="text-sm font-medium text-foreground">{result.title}</p>
-                      </div>
-                    )}
-                    {result.text_content && (
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Text Content</p>
-                        <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
-                          {result.text_content?.slice(0, 500)}
-                          {result.text_content && result.text_content.length > 500 && "..."}
-                        </pre>
-                      </div>
-                    )}
-                    {result.links && result.links.length > 0 && (
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                          Links ({result.links.length})
-                        </p>
-                        <ul className="text-xs font-mono text-foreground space-y-0.5 max-h-32 overflow-y-auto">
-                          {result.links.slice(0, 20).map((link: string, i: number) => (
-                            <li key={i} className="truncate">{link}</li>
-                          ))}
-                          {result.links.length > 20 && <li className="text-muted-foreground">...and {result.links.length - 20} more</li>}
-                        </ul>
-                      </div>
-                    )}
-                    {result.images && result.images.length > 0 && (
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                          Images ({result.images.length})
-                        </p>
-                        <ul className="text-xs font-mono text-foreground space-y-0.5 max-h-32 overflow-y-auto">
-                          {result.images.slice(0, 10).map((img: string, i: number) => (
-                            <li key={i} className="truncate">{img}</li>
-                          ))}
-                          {result.images.length > 10 && <li className="text-muted-foreground">...and {result.images.length - 10} more</li>}
-                        </ul>
-                      </div>
-                    )}
-                    {result.selectors?.map((s, i) => (
-                      <div key={i}>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{s.name}</p>
-                        <p className="text-sm font-mono text-foreground truncate">
-                          {String(s.value ?? "(empty)").slice(0, 100)}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
             )}
           </CardContent>
         </Card>
