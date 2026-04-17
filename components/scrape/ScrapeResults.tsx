@@ -5,21 +5,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Code, Copy, Check } from "lucide-react"
 import { useState } from "react"
-import type { ScrapeResult } from "./types"
+import type { ScrapeResult, ScrapeResultField } from "./types"
 import { SyntaxHighlightedJson } from "@/components/docs"
+import { filterResultByFields } from "./ScrapeFieldSelector"
 
 interface ScrapeResultsProps {
   result: ScrapeResult | null
   submitting: boolean
   error?: string
+  selectedFields?: Set<ScrapeResultField> | null
 }
 
-export function ScrapeResults({ result, submitting, error }: ScrapeResultsProps) {
+export function ScrapeResults({ result, submitting, error, selectedFields }: ScrapeResultsProps) {
   const [copied, setCopied] = useState(false)
 
+  const filteredResult = result ? filterResultByFields(result, selectedFields ?? null) : null
+
   function handleCopy() {
-    if (!result) return
-    navigator.clipboard.writeText(JSON.stringify(result, null, 2))
+    if (!filteredResult) return
+    navigator.clipboard.writeText(JSON.stringify(filteredResult, null, 2))
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -66,7 +70,7 @@ export function ScrapeResults({ result, submitting, error }: ScrapeResultsProps)
                 {copied ? "Copied" : "Copy JSON"}
               </Button>
             </div>
-            <SyntaxHighlightedJson data={result as unknown as Record<string, unknown>} />
+            <SyntaxHighlightedJson data={filteredResult as unknown as Record<string, unknown>} />
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">

@@ -1,5 +1,6 @@
-export type { Selector, ScrapeResult, ScrapeSubmitData } from "./types"
+export type { Selector, ScrapeResult, ScrapeSubmitData, ScrapeResultField } from "./types"
 export { SelectorItem } from "./SelectorItem"
 export { SelectorList } from "./SelectorList"
 export { ScrapeForm } from "./ScrapeForm"
 export { ScrapeResults } from "./ScrapeResults"
+export { ScrapeFieldSelector, filterResultByFields } from "./ScrapeFieldSelector"

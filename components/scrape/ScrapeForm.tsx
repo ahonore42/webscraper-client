@@ -7,27 +7,34 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Loader2, Globe, Eye } from "lucide-react"
-import type { Selector, ScrapeSubmitData } from "./types"
+import type { Selector, ScrapeSubmitData, ScrapeResultField } from "./types"
 import { SelectorList } from "./SelectorList"
+import { ScrapeFieldSelector } from "./ScrapeFieldSelector"
 
 interface ScrapeFormProps {
   onSubmit: (data: ScrapeSubmitData) => void
   disabled?: boolean
   submitting?: boolean
   initialSelectors?: Selector[]
+  selectedFields?: Set<ScrapeResultField> | null
+  onFieldsChange?: (fields: Set<ScrapeResultField> | null) => void
 }
 
-export function ScrapeForm({ onSubmit, disabled, submitting, initialSelectors }: ScrapeFormProps) {
+export function ScrapeForm({ onSubmit, disabled, submitting, initialSelectors, selectedFields, onFieldsChange }: ScrapeFormProps) {
   const [url, setUrl] = useState("")
   const [selectors, setSelectors] = useState<Selector[]>(
     initialSelectors ?? [{ name: "title", selector: "h1", selector_type: "css" }]
   )
   const [renderJs, setRenderJs] = useState(false)
+  const [internalFields, setInternalFields] = useState<Set<ScrapeResultField> | null>(null)
+
+  const activeFields = selectedFields !== undefined ? selectedFields : internalFields
+  const activeOnFieldsChange = onFieldsChange ?? setInternalFields
 
   function handleSubmit() {
     if (!url || disabled || submitting) return
     if (!url.startsWith("http://") && !url.startsWith("https://")) return
-    onSubmit({ url, selectors: selectors.filter((s) => s.name && s.selector), renderJs })
+    onSubmit({ url, selectors: selectors.filter((s) => s.name && s.selector), renderJs, fields: activeFields })
   }
 
   function addSelector() {
@@ -71,6 +78,16 @@ export function ScrapeForm({ onSubmit, disabled, submitting, initialSelectors }:
           onRemove={removeSelector}
           onUpdate={updateSelector}
         />
+
+        <Separator />
+
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Result Fields</Label>
+          <ScrapeFieldSelector
+            selectedFields={activeFields}
+            onFieldsChange={activeOnFieldsChange}
+          />
+        </div>
 
         <Separator />
 

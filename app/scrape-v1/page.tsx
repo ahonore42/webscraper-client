@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { ScrapeForm, ScrapeResults } from "@/components/scrape"
-import type { ScrapeResult, ScrapeSubmitData } from "@/components/scrape"
+import type { ScrapeResult, ScrapeSubmitData, ScrapeResultField } from "@/components/scrape"
 
 export default function PublicScrapePage() {
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<ScrapeResult | null>(null)
+  const [selectedFields, setSelectedFields] = useState<Set<ScrapeResultField> | null>(null)
 
   // Load result passed from landing page via sessionStorage, open SSE if pending
   useEffect(() => {
@@ -102,12 +103,6 @@ export default function PublicScrapePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center">
-          <span className="font-semibold text-foreground">WebScraper</span>
-        </div>
-      </header>
-
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="space-y-8">
           <div>
@@ -118,8 +113,13 @@ export default function PublicScrapePage() {
           </div>
 
           <div className="grid gap-8 lg:grid-cols-2">
-            <ScrapeForm onSubmit={handleScrape} submitting={submitting} />
-            <ScrapeResults result={result} submitting={submitting} />
+            <ScrapeForm
+              onSubmit={handleScrape}
+              submitting={submitting}
+              selectedFields={selectedFields}
+              onFieldsChange={setSelectedFields}
+            />
+            <ScrapeResults result={result} submitting={submitting} selectedFields={selectedFields} />
           </div>
         </div>
       </div>

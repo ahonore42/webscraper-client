@@ -4,12 +4,13 @@ import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { ScrapeForm, ScrapeResults } from "@/components/scrape"
-import type { ScrapeResult, ScrapeSubmitData } from "@/components/scrape"
+import type { ScrapeResult, ScrapeSubmitData, ScrapeResultField } from "@/components/scrape"
 
 export default function ScrapePage() {
   const { data: session } = useSession()
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<ScrapeResult | null>(null)
+  const [selectedFields, setSelectedFields] = useState<Set<ScrapeResultField> | null>(null)
 
   async function handleScrape(data: ScrapeSubmitData) {
     if (!session?.user?.accessToken) return
@@ -56,8 +57,10 @@ export default function ScrapePage() {
           onSubmit={handleScrape}
           disabled={!session?.user?.accessToken}
           submitting={submitting}
+          selectedFields={selectedFields}
+          onFieldsChange={setSelectedFields}
         />
-        <ScrapeResults result={result} submitting={submitting} />
+        <ScrapeResults result={result} submitting={submitting} selectedFields={selectedFields} />
       </div>
     </div>
   )
