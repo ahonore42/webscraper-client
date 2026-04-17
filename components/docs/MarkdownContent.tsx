@@ -1,23 +1,12 @@
 import { MarkdownAsync as ReactMarkdown } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypePrettyCode from "rehype-pretty-code"
-import type { Metadata } from "next"
-import fs from "fs/promises"
-import path from "path"
 
-export const metadata: Metadata = {
-  title: "API Documentation — WebScraper",
-  description: "Complete API reference for the WebScraper API",
+interface MarkdownContentProps {
+  content: string
 }
 
-async function getDocContent() {
-  const filePath = path.join(process.cwd(), "docs", "api.md")
-  return await fs.readFile(filePath, "utf8")
-}
-
-export default async function DocsPage() {
-  const content = await getDocContent()
-
+export function MarkdownContent({ content }: MarkdownContentProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -102,7 +91,7 @@ export default async function DocsPage() {
           return <code {...props}>{children}</code>
         },
         pre: ({ children }) => (
-          <pre className="bg-card border border-border rounded-lg p-4 overflow-x-auto my-4 text-sm">
+          <pre className="bg-muted border border-border rounded-lg p-4 overflow-x-auto my-4 text-sm">
             {children}
           </pre>
         ),
