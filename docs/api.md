@@ -6,6 +6,126 @@ A programmatic web scraping API. Submit scrape jobs, retrieve structured data, s
 
 ---
 
+## Introduction
+
+### What is WebScraper?
+
+WebScraper is an API-first web scraping service. It lets you:
+
+- Extract structured data from any website using CSS or XPath selectors
+- Schedule recurring scrapes with automatic webhook delivery
+- Manage reusable selector sets for consistent extraction across multiple URLs
+- Render JavaScript-heavy pages with a headless browser
+- Test selectors without persisting data
+
+### Core concepts
+
+| Concept | Description |
+|---|---|
+| **Scrape job** | A single URL extraction request. Submit, poll, get results. |
+| **Selector set** | A named collection of selectors + URL patterns. Reusable across jobs. |
+| **Schedule** | A cron-like recurring job. Delivers results via webhook. |
+| **API key** | Long-lived programmatic credential. Referenced by `id`, auth via `X-API-Key` header. |
+| **Public scrape** | Free, unauthenticated endpoint. Rate-limited to 3 req/min per IP. |
+
+---
+
+## Getting Started
+
+### 1. Register an account
+
+```http
+POST /auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "min-8-characters"
+}
+```
+
+Returns `201`. Auto-login immediately after via `/auth/login`.
+
+### 2. Login and get a token
+
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "your-password"
+}
+```
+
+**Response `200`:**
+```json
+{
+  "access_token": "<jwt>",
+  "token_type": "bearer",
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "created_at": "2026-04-01T00:00:00Z",
+    "is_active": true
+  }
+}
+```
+
+### 3. Create an API key
+
+API keys let you make authenticated requests without sending your password.
+
+```http
+POST /auth/keys
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{ "name": "Production" }
+```
+
+**Response `201`:**
+```json
+{
+  "id": "uuid",
+  "name": "Production",
+  "prefix": "wsk_live_",
+  "plaintext_key": "wsk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "created_at": "2026-04-01T00:00:00Z"
+}
+```
+
+> **Save `plaintext_key` immediately.** It is shown only once.
+
+### 4. Submit your first scrape
+
+```http
+POST /scrape
+Authorization: Bearer <token>
+X-API-Key: <api_key>
+Content-Type: application/json
+
+{
+  "url": "https://news.ycombinator.com",
+  "selectors": [
+    { "name": "title", "selector": "title", "selector_type": "css" },
+    { "name": "headlines", "selector": ".titleline > a", "selector_type": "css" }
+  ]
+}
+```
+
+**Response `202`:**
+```json
+{
+  "job_id": "uuid",
+  "status": "pending"
+}
+```
+
+Poll `GET /scrape/{job_id}` until `status` is `"success"` or `"failed"`.
+
+---
+
 ## Authentication
 
 ### Register
@@ -278,21 +398,9 @@ X-API-Key: <api_key>
 
 ## Public Scrape (No Auth Required)
 
-A free, rate-limited endpoint for quick ad-hoc scraping without an account.
+A free, rate-limited endpoint for quick ad-hoc scraping without an account. Accessed through the web UI on the landing page.
 
-```http
-POST /public/scrape
-X-Public-Token: <public_token>
-Content-Type: application/json
-
-{
-  "url": "https://news.ycombinator.com",
-  "selectors": [
-    { "name": "title", "selector": "title", "selector_type": "css" }
-  ],
-  "render_js": false
-}
-```
+Enter a URL and click Scrape. The endpoint returns the full page HTML as JSON — `html_content`, `text_content`, `links`, and `images` — without needing any selectors. The UI automatically polls for the result and displays it when ready.
 
 **Limits:** 3 requests per minute per IP. Jobs are queued in a low-priority queue and may take longer during high traffic. No `save_to_db` or `callback_url`.
 

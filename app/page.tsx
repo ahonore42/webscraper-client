@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { Loader2, Globe, Code2, Clock, Shield, Zap, CheckCircle, ArrowRight } from "lucide-react"
 import { toast } from "sonner"
+import { Header } from "@/components/header"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -25,14 +25,15 @@ interface ScrapeResult {
   status: string
   url: string
   title?: string
+  text_content?: string
+  links?: string[]
+  images?: string[]
   selectors?: Array<{ name: string; value: unknown }>
   error_message?: string
 }
 
 export default function LandingPage() {
-  const { data: session } = useSession()
   const router = useRouter()
-
   const [url, setUrl] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [polling, setPolling] = useState(false)
@@ -57,7 +58,7 @@ export default function LandingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           url,
-          selectors: [{ name: "title", selector: "title", selector_type: "css" }],
+          selectors: [],
           render_js: false,
         }),
       })
@@ -103,32 +104,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Nav */}
-      <header className="border-b border-border">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <span className="font-semibold text-lg tracking-tight text-foreground">WebScraper</span>
-          <nav className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/docs">Docs</Link>
-            </Button>
-            {session ? (
-              <Button onClick={() => router.push("/dashboard")} size="sm" className="gap-1">
-                Dashboard
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            ) : (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login">Sign in</Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/register">Get started</Link>
-                </Button>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
 
       {/* Hero */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-24 text-center">
@@ -179,11 +154,46 @@ export default function LandingPage() {
                 {result.error_message ? (
                   <p className="text-sm text-destructive">{result.error_message}</p>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {result.title && (
                       <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider">Title</p>
                         <p className="text-sm font-medium text-foreground">{result.title}</p>
+                      </div>
+                    )}
+                    {result.text_content && (
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Text Content</p>
+                        <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
+                          {result.text_content?.slice(0, 500)}
+                          {result.text_content && result.text_content.length > 500 && "..."}
+                        </pre>
+                      </div>
+                    )}
+                    {result.links && result.links.length > 0 && (
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                          Links ({result.links.length})
+                        </p>
+                        <ul className="text-xs font-mono text-foreground space-y-0.5 max-h-32 overflow-y-auto">
+                          {result.links.slice(0, 20).map((link: string, i: number) => (
+                            <li key={i} className="truncate">{link}</li>
+                          ))}
+                          {result.links.length > 20 && <li className="text-muted-foreground">...and {result.links.length - 20} more</li>}
+                        </ul>
+                      </div>
+                    )}
+                    {result.images && result.images.length > 0 && (
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                          Images ({result.images.length})
+                        </p>
+                        <ul className="text-xs font-mono text-foreground space-y-0.5 max-h-32 overflow-y-auto">
+                          {result.images.slice(0, 10).map((img: string, i: number) => (
+                            <li key={i} className="truncate">{img}</li>
+                          ))}
+                          {result.images.length > 10 && <li className="text-muted-foreground">...and {result.images.length - 10} more</li>}
+                        </ul>
                       </div>
                     )}
                     {result.selectors?.map((s, i) => (
