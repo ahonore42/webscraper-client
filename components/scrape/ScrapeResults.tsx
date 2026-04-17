@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Code, Copy, Check } from "lucide-react"
 import { useState } from "react"
 import type { ScrapeResult } from "./types"
+import { SyntaxHighlightedJson } from "@/components/docs"
 
 interface ScrapeResultsProps {
   result: ScrapeResult | null
@@ -65,11 +66,7 @@ export function ScrapeResults({ result, submitting, error }: ScrapeResultsProps)
                 {copied ? "Copied" : "Copy JSON"}
               </Button>
             </div>
-            <div className="rounded-lg border border-border overflow-hidden text-xs">
-              <pre className="p-4 text-xs text-foreground overflow-auto max-h-96 whitespace-pre-wrap">
-                {JSON.stringify(result, null, 2)}
-              </pre>
-            </div>
+            <SyntaxHighlightedJson data={result as unknown as Record<string, unknown>} />
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">

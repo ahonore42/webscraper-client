@@ -10,7 +10,6 @@ export interface ScrapeResult {
   status: string
   url: string
   title?: string
-  text_content?: string
   html_content?: string
   links?: string[]
   images?: string[]
