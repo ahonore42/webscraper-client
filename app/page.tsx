@@ -108,6 +108,9 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <span className="font-semibold text-lg tracking-tight text-foreground">WebScraper</span>
           <nav className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/docs">Docs</Link>
+            </Button>
             {session ? (
               <Button onClick={() => router.push("/dashboard")} size="sm" className="gap-1">
                 Dashboard
