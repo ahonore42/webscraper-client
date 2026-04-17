@@ -47,10 +47,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-2xl font-semibold text-foreground">
           Welcome back, {session?.user?.email}
         </h1>
-        <p className="text-zinc-500 mt-1">Here&apos;s what&apos;s happening with your scraper.</p>
+        <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening with your scraper.</p>
       </div>
 
       {/* Stats grid */}
@@ -59,7 +59,7 @@ export default function DashboardPage() {
           title="API Keys"
           description="Active keys"
           value={loading ? <Loader2 className="h-5 w-5 animate-spin" /> : String(keyCount ?? 0)}
-          icon={<Key className="h-5 w-5 text-zinc-500" />}
+          icon={<Key className="h-5 w-5 text-muted-foreground" />}
           href="/api-keys"
           hrefLabel="Manage keys"
         />
@@ -67,7 +67,7 @@ export default function DashboardPage() {
           title="Total Scrapes"
           description="All time"
           value={loading ? <Loader2 className="h-5 w-5 animate-spin" /> : String(stats?.total ?? 0)}
-          icon={<Database className="h-5 w-5 text-zinc-500" />}
+          icon={<Database className="h-5 w-5 text-muted-foreground" />}
           href="/scrape"
           hrefLabel="New scrape"
         />
@@ -83,7 +83,7 @@ export default function DashboardPage() {
               "—"
             )
           }
-          icon={<CheckCircle className="h-5 w-5 text-zinc-500" />}
+          icon={<CheckCircle className="h-5 w-5 text-muted-foreground" />}
         />
       </div>
 
@@ -113,7 +113,7 @@ export default function DashboardPage() {
             title="Integrate via API"
             description="Use your API key in requests to the /scrape endpoint."
           >
-            <code className="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded mt-2 inline-block font-mono">
+            <code className="text-xs bg-muted px-2 py-1 rounded mt-2 inline-block font-mono">
               curl -X POST https://api.example.com/scrape -H &quot;X-API-Key: your-key&quot; -d &#123;&quot;url&quot;: &quot;https://...&quot;&#125;
             </code>
           </QuickStartStep>
@@ -157,16 +157,16 @@ function StatCard({
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-zinc-500">{title}</p>
+            <p className="text-sm text-muted-foreground">{title}</p>
             <p className="text-2xl font-semibold mt-1">{value}</p>
-            <p className="text-xs text-zinc-400 mt-1">{description}</p>
+            <p className="text-xs text-muted-foreground mt-1">{description}</p>
           </div>
-          <div className="text-zinc-400">{icon}</div>
+          <div className="text-muted-foreground">{icon}</div>
         </div>
         {href && hrefLabel && (
           <a
             href={href}
-            className="inline-block mt-4 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 underline underline-offset-4"
+            className="inline-block mt-4 text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
           >
             {hrefLabel} →
           </a>
@@ -193,17 +193,17 @@ function QuickStartStep({
 }) {
   return (
     <div className="flex gap-4">
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 flex items-center justify-center text-sm font-medium">
+      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
         {number}
       </div>
       <div className="flex-1">
-        <p className="font-medium text-zinc-900 dark:text-zinc-50">{title}</p>
-        <p className="text-sm text-zinc-500 mt-0.5">{description}</p>
+        <p className="font-medium text-foreground">{title}</p>
+        <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
         {children}
         {href && hrefLabel && (
           <a
             href={href}
-            className="inline-block mt-2 text-sm font-medium text-zinc-900 dark:text-zinc-50 underline underline-offset-4"
+            className="inline-block mt-2 text-sm font-medium text-foreground underline underline-offset-4"
           >
             {hrefLabel} →
           </a>
@@ -217,11 +217,11 @@ function DocLink({ href, label, description }: { href: string; label: string; de
   return (
     <a
       href={href}
-      className="flex items-center justify-between p-3 rounded-lg border hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+      className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors"
     >
       <div>
-        <p className="font-medium text-zinc-900 dark:text-zinc-50">{label}</p>
-        <p className="text-xs text-zinc-500">{description}</p>
+        <p className="font-medium text-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       </div>
     </a>
   )

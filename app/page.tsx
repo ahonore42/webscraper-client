@@ -19,7 +19,6 @@ import { Loader2, Globe, Code2, Clock, Shield, Zap, CheckCircle, ArrowRight } fr
 import { toast } from "sonner"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
-const PUBLIC_SCRAPE_URL = `${API_URL}/public/scrape`
 
 interface ScrapeResult {
   job_id: string
@@ -103,11 +102,11 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-50">
+    <div className="min-h-screen flex flex-col">
       {/* Nav */}
-      <header className="border-b border-zinc-800">
+      <header className="border-b border-border">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <span className="font-semibold text-lg tracking-tight">WebScraper</span>
+          <span className="font-semibold text-lg tracking-tight text-foreground">WebScraper</span>
           <nav className="flex items-center gap-4">
             {session ? (
               <Button onClick={() => router.push("/dashboard")} size="sm" className="gap-1">
@@ -130,22 +129,22 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="flex-1 flex flex-col items-center justify-center px-4 py-24 text-center">
-        <Badge variant="outline" className="mb-6 border-zinc-700 text-zinc-400">
+        <Badge variant="outline" className="mb-6 border-border text-muted-foreground">
           API-first web scraping
         </Badge>
-        <h1 className="text-5xl font-bold tracking-tight max-w-2xl mb-6">
+        <h1 className="text-5xl font-bold tracking-tight max-w-2xl mb-6 text-foreground">
           Programmatic web scraping at scale
         </h1>
-        <p className="text-zinc-400 text-lg max-w-xl mb-10">
+        <p className="text-muted-foreground text-lg max-w-xl mb-10">
           Extract structured data from any website. CSS selectors, XPath, JavaScript rendering,
           scheduled jobs — all via a simple REST API.
         </p>
 
         {/* Public scrape form */}
-        <Card className="w-full max-w-lg bg-zinc-900 border-zinc-800 mb-12">
+        <Card className="w-full max-w-lg mb-12">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Zap className="h-4 w-4 text-zinc-400" />
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Zap className="h-4 w-4 text-muted-foreground" />
               Try it now — no signup required
             </CardTitle>
           </CardHeader>
@@ -155,7 +154,7 @@ export default function LandingPage() {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://news.ycombinator.com"
-                className="flex-1 bg-zinc-950 border-zinc-700 placeholder:text-zinc-600"
+                className="flex-1"
                 onKeyDown={(e) => e.key === "Enter" && handlePublicScrape()}
               />
               <Button onClick={handlePublicScrape} disabled={submitting || polling} className="shrink-0">
@@ -167,27 +166,27 @@ export default function LandingPage() {
               </Button>
             </div>
             {(submitting || polling) && (
-              <p className="text-xs text-zinc-500 flex items-center gap-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 {polling ? "Scraping..." : "Submitting..."}
               </p>
             )}
             {result && (
-              <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 text-left">
+              <div className="p-3 rounded-lg border border-border bg-muted/30 text-left">
                 {result.error_message ? (
-                  <p className="text-sm text-red-400">{result.error_message}</p>
+                  <p className="text-sm text-destructive">{result.error_message}</p>
                 ) : (
                   <div className="space-y-2">
                     {result.title && (
                       <div>
-                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Title</p>
-                        <p className="text-sm font-medium">{result.title}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Title</p>
+                        <p className="text-sm font-medium text-foreground">{result.title}</p>
                       </div>
                     )}
                     {result.selectors?.map((s, i) => (
                       <div key={i}>
-                        <p className="text-xs text-zinc-500 uppercase tracking-wider">{s.name}</p>
-                        <p className="text-sm font-mono text-zinc-300 truncate">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{s.name}</p>
+                        <p className="text-sm font-mono text-foreground truncate">
                           {String(s.value ?? "(empty)").slice(0, 100)}
                         </p>
                       </div>
@@ -199,51 +198,51 @@ export default function LandingPage() {
           </CardContent>
         </Card>
 
-        <div className="flex gap-8 text-sm text-zinc-500">
+        <div className="flex gap-8 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <CheckCircle className="h-4 w-4 text-zinc-600" /> No credit card
+            <CheckCircle className="h-4 w-4" /> No credit card
           </span>
           <span className="flex items-center gap-1.5">
-            <CheckCircle className="h-4 w-4 text-zinc-600" /> Free tier included
+            <CheckCircle className="h-4 w-4" /> Free tier included
           </span>
           <span className="flex items-center gap-1.5">
-            <CheckCircle className="h-4 w-4 text-zinc-600" /> API key auth
+            <CheckCircle className="h-4 w-4" /> API key auth
           </span>
         </div>
       </section>
 
       {/* Features */}
-      <section className="border-t border-zinc-800 py-20 px-4">
+      <section className="border-t border-border py-20 px-4">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-semibold text-center mb-12">Everything you need to scrape at scale</h2>
+          <h2 className="text-2xl font-semibold text-center mb-12 text-foreground">Everything you need to scrape at scale</h2>
           <div className="grid gap-8 md:grid-cols-3">
             <FeatureCard
-              icon={<Globe className="h-5 w-5" />}
+              icon={<Globe className="h-5 w-5 text-primary" />}
               title="Any website, any data"
               description="CSS selectors, XPath queries, or auto-detected content. Extract titles, prices, links, images, and custom fields."
             />
             <FeatureCard
-              icon={<Code2 className="h-5 w-5" />}
+              icon={<Code2 className="h-5 w-5 text-primary" />}
               title="JavaScript rendering"
               description="Our headless browser renders JavaScript-heavy pages automatically. Scrape SPAs, React apps, and dynamic content."
             />
             <FeatureCard
-              icon={<Clock className="h-5 w-5" />}
+              icon={<Clock className="h-5 w-5 text-primary" />}
               title="Scheduled scraping"
               description="Set up recurring scrape jobs on a cron schedule. We run them and deliver results to your webhook."
             />
             <FeatureCard
-              icon={<Shield className="h-5 w-5" />}
+              icon={<Shield className="h-5 w-5 text-primary" />}
               title="API key auth"
               description="Every request authenticated via API key. Track usage per key, revoke instantly, and manage access controls."
             />
             <FeatureCard
-              icon={<Zap className="h-5 w-5" />}
+              icon={<Zap className="h-5 w-5 text-primary" />}
               title="Rate limiting"
               description="Generous rate limits with automatic throttling. Queued jobs run reliably under load."
             />
             <FeatureCard
-              icon={<Code2 className="h-5 w-5" />}
+              icon={<Code2 className="h-5 w-5 text-primary" />}
               title="Stored selectors"
               description="Save selector sets to your account. Reference them by name instead of repeating selectors in every request."
             />
@@ -252,9 +251,9 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-zinc-800 py-16 px-4 text-center">
-        <h2 className="text-2xl font-semibold mb-3">Start scraping in minutes</h2>
-        <p className="text-zinc-400 mb-6 max-w-md mx-auto">
+      <section className="border-t border-border py-16 px-4 text-center">
+        <h2 className="text-2xl font-semibold mb-3 text-foreground">Start scraping in minutes</h2>
+        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
           Create a free account and get your first API key instantly.
         </p>
         <div className="flex gap-3 justify-center">
@@ -268,7 +267,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 py-6 px-4 text-center text-xs text-zinc-600">
+      <footer className="border-t border-border py-6 px-4 text-center text-xs text-muted-foreground">
         <p>Built with FastAPI + Next.js</p>
       </footer>
 
@@ -299,11 +298,11 @@ export default function LandingPage() {
           </div>
           <div className="py-4">
             {authMode === "register" ? (
-              <p className="text-sm text-zinc-500 text-center">
+              <p className="text-sm text-muted-foreground text-center">
                 Redirecting to registration...
               </p>
             ) : (
-              <p className="text-sm text-zinc-500 text-center">Redirecting to login...</p>
+              <p className="text-sm text-muted-foreground text-center">Redirecting to login...</p>
             )}
           </div>
           <Button
@@ -332,10 +331,10 @@ function FeatureCard({
   description: string
 }) {
   return (
-    <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-900/50">
-      <div className="text-zinc-400 mb-3">{icon}</div>
-      <p className="font-medium mb-2">{title}</p>
-      <p className="text-sm text-zinc-500 leading-relaxed">{description}</p>
+    <div className="p-6 rounded-xl border border-border bg-card">
+      <div className="text-muted-foreground mb-3">{icon}</div>
+      <p className="font-medium mb-2 text-foreground">{title}</p>
+      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
     </div>
   )
 }

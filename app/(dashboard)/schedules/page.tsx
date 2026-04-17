@@ -155,8 +155,8 @@ export default function SchedulesPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Schedules</h1>
-          <p className="text-zinc-500 text-sm mt-1">Automate recurring scrape jobs</p>
+          <h1 className="text-2xl font-semibold text-foreground">Schedules</h1>
+          <p className="text-muted-foreground text-sm mt-1">Automate recurring scrape jobs</p>
         </div>
 
         <Dialog open={showCreate} onOpenChange={setShowCreate}>
@@ -203,7 +203,7 @@ export default function SchedulesPage() {
                     setForm({ ...form, interval_seconds: parseInt(e.target.value) || 3600 })
                   }
                 />
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-muted-foreground">
                   {formatInterval(form.interval_seconds)}
                 </p>
               </div>
@@ -236,13 +236,13 @@ export default function SchedulesPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-12 text-zinc-500">
+        <div className="flex items-center justify-center py-12 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin" />
         </div>
       ) : schedules.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-zinc-500">
-            <Clock className="h-8 w-8 mx-auto mb-3 text-zinc-300" />
+          <CardContent className="py-12 text-center text-muted-foreground">
+            <Clock className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
             <p>No schedules yet</p>
             <p className="text-sm mt-1">Create a schedule to automate your scraping</p>
           </CardContent>
@@ -264,13 +264,13 @@ export default function SchedulesPage() {
               {schedules.map((sched) => (
                 <TableRow key={sched.id}>
                   <TableCell className="font-medium">{sched.name}</TableCell>
-                  <TableCell className="text-zinc-500 text-sm max-w-xs truncate">
+                  <TableCell className="text-muted-foreground text-sm max-w-xs truncate">
                     {sched.url}
                   </TableCell>
-                  <TableCell className="text-zinc-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {formatInterval(sched.interval_seconds)}
                   </TableCell>
-                  <TableCell className="text-zinc-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {sched.next_run_at
                       ? new Date(sched.next_run_at).toLocaleString()
                       : "—"}
@@ -304,7 +304,7 @@ export default function SchedulesPage() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => deleteSchedule(sched.id)}
-                          className="gap-2 text-red-500 focus:text-red-500"
+                          className="gap-2 text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
                           Delete

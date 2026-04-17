@@ -50,7 +50,7 @@ function LoginForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 dark:bg-red-950 p-3 rounded-md">
+            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
               <AlertCircle className="h-4 w-4" />
               {error}
             </div>
@@ -79,9 +79,9 @@ function LoginForm() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </Button>
-          <p className="text-center text-sm text-zinc-500">
+          <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-zinc-900 dark:text-zinc-300 underline underline-offset-4">
+            <Link href="/register" className="text-foreground underline underline-offset-4">
               Register
             </Link>
           </p>
@@ -96,7 +96,7 @@ export default function LoginPage() {
     <Suspense fallback={
       <Card className="w-full max-w-sm">
         <CardContent className="pt-6">
-          <div className="animate-pulse text-zinc-500 text-center">Loading...</div>
+          <div className="animate-pulse text-muted-foreground text-center">Loading...</div>
         </CardContent>
       </Card>
     }>

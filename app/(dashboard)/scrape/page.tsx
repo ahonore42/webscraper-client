@@ -123,8 +123,8 @@ export default function ScrapePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">New Scrape</h1>
-        <p className="text-zinc-500 text-sm mt-1">Submit a URL and define selectors to extract data</p>
+        <h1 className="text-2xl font-semibold text-foreground">New Scrape</h1>
+        <p className="text-muted-foreground text-sm mt-1">Submit a URL and define selectors to extract data</p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
@@ -189,7 +189,7 @@ export default function ScrapePage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => removeSelector(i)}
-                    className="mt-1 text-zinc-400 hover:text-red-500"
+                    className="mt-1 text-muted-foreground hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -237,7 +237,7 @@ export default function ScrapePage() {
             <CardTitle>Results</CardTitle>
             <CardDescription>
               {polling ? (
-                <span className="flex items-center gap-2 text-zinc-500">
+                <span className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Scraping...
                 </span>
@@ -246,7 +246,7 @@ export default function ScrapePage() {
                   {result.status}
                 </Badge>
               ) : (
-                <span className="text-zinc-400">Results will appear here</span>
+                <span className="text-muted-foreground">Results will appear here</span>
               )}
             </CardDescription>
           </CardHeader>
@@ -259,28 +259,28 @@ export default function ScrapePage() {
               <div className="space-y-4">
                 {result.title && (
                   <div>
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider">Title</p>
-                    <p className="font-medium text-zinc-900 dark:text-zinc-50">{result.title}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Title</p>
+                    <p className="font-medium text-foreground dark:text-foreground">{result.title}</p>
                   </div>
                 )}
                 {result.selectors.map((sel, i) => (
                   <div key={i}>
                     <div className="flex items-center gap-2">
-                      <p className="text-xs text-zinc-500 uppercase tracking-wider">{sel.name}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">{sel.name}</p>
                       <Badge variant="secondary" className="text-xs font-normal">
                         {sel.selector_type}
                       </Badge>
                     </div>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-1 font-mono break-all">
+                    <p className="text-sm text-muted-foreground mt-1 font-mono break-all">
                       {formatValue(sel.value)}
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-zinc-300">
+              <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <Code className="h-12 w-12 mb-3" />
-                <p className="text-sm text-zinc-400">Configure and run a scrape to see results</p>
+                <p className="text-sm text-muted-foreground">Configure and run a scrape to see results</p>
               </div>
             )}
           </CardContent>

@@ -31,8 +31,8 @@ export default function DashboardLayout({
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-zinc-500">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
       </div>
     )
   }
@@ -40,12 +40,12 @@ export default function DashboardLayout({
   if (!session) return null
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Top nav */}
-      <header className="border-b bg-white dark:bg-zinc-950">
+      <header className="border-b border-border bg-card">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <nav className="flex items-center gap-6">
-            <Link href="/dashboard" className="font-semibold text-zinc-900 dark:text-zinc-50">
+            <Link href="/dashboard" className="font-semibold text-foreground">
               WebScraper
             </Link>
             <div className="hidden md:flex items-center gap-1">
@@ -58,17 +58,17 @@ export default function DashboardLayout({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-2">
+              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
                 {session.user?.email}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{session.user?.email}</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-muted-foreground">{session.user?.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="text-red-600 cursor-pointer"
+                className="text-destructive cursor-pointer"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign out
@@ -79,7 +79,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Mobile nav */}
-      <div className="md:hidden border-b bg-white dark:bg-zinc-950 px-4 py-2 flex gap-4">
+      <div className="md:hidden border-b border-border bg-card px-4 py-2 flex gap-4">
         <NavLink href="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />} label="Dashboard" />
         <NavLink href="/scrape" icon={<Search className="h-4 w-4" />} label="Scrape" />
         <NavLink href="/api-keys" icon={<Key className="h-4 w-4" />} label="API Keys" />
@@ -87,7 +87,7 @@ export default function DashboardLayout({
       </div>
 
       {/* Content */}
-      <main className="flex-1 bg-zinc-50 dark:bg-zinc-950">
+      <main className="flex-1 bg-background">
         <div className="max-w-5xl mx-auto px-4 py-8">{children}</div>
       </main>
     </div>
@@ -98,7 +98,7 @@ function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; l
   return (
     <Link
       href={href}
-      className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+      className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
     >
       {icon}
       {label}

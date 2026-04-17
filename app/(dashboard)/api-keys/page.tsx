@@ -144,8 +144,8 @@ export default function ApiKeysPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">API Keys</h1>
-          <p className="text-zinc-500 text-sm mt-1">
+          <h1 className="text-2xl font-semibold text-foreground">API Keys</h1>
+          <p className="text-muted-foreground text-sm mt-1">
             Manage API keys for programmatic access
           </p>
         </div>
@@ -200,7 +200,7 @@ export default function ApiKeysPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center gap-2">
-              <code className="flex-1 bg-white dark:bg-zinc-900 border rounded-md px-3 py-2 font-mono text-sm break-all">
+              <code className="flex-1 bg-muted border rounded-md px-3 py-2 font-mono text-sm break-all">
                 {newKeyData.plaintext_key}
               </code>
               <Button size="sm" variant="outline" onClick={copyKey} className="gap-1 shrink-0">
@@ -208,8 +208,8 @@ export default function ApiKeysPage() {
                 {copied ? "Copied" : "Copy"}
               </Button>
             </div>
-            <p className="text-xs text-zinc-500">
-              Prefix: <code className="bg-zinc-100 dark:bg-zinc-800 px-1 rounded">{newKeyData.prefix}</code>
+            <p className="text-xs text-muted-foreground">
+              Prefix: <code className="bg-muted px-1 rounded">{newKeyData.prefix}</code>
             </p>
           </CardContent>
         </Card>
@@ -217,13 +217,13 @@ export default function ApiKeysPage() {
 
       {/* Keys list */}
       {loading ? (
-        <div className="flex items-center justify-center py-12 text-zinc-500">
+        <div className="flex items-center justify-center py-12 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin" />
         </div>
       ) : keys.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-zinc-500">
-            <Key className="h-8 w-8 mx-auto mb-3 text-zinc-300" />
+          <CardContent className="py-12 text-center text-muted-foreground">
+            <Key className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
             <p>No API keys yet</p>
             <p className="text-sm mt-1">Create your first key to start making API calls</p>
           </CardContent>
@@ -246,7 +246,7 @@ export default function ApiKeysPage() {
                 <TableRow key={key.id}>
                   <TableCell className="font-medium">{key.name}</TableCell>
                   <TableCell>
-                    <code className="text-sm bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
+                    <code className="text-sm bg-muted dark:bg-card px-1.5 py-0.5 rounded">
                       {key.prefix}...
                     </code>
                   </TableCell>
@@ -255,12 +255,12 @@ export default function ApiKeysPage() {
                       {key.is_active ? "Active" : "Revoked"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-zinc-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {key.last_used_at
                       ? new Date(key.last_used_at).toLocaleDateString()
                       : "Never"}
                   </TableCell>
-                  <TableCell className="text-zinc-500 text-sm">
+                  <TableCell className="text-muted-foreground text-sm">
                     {key.created_at
                       ? new Date(key.created_at).toLocaleDateString()
                       : "—"}
@@ -270,7 +270,7 @@ export default function ApiKeysPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        className="text-destructive hover:text-destructive"
                         onClick={() => setRevokeTarget(key)}
                       >
                         <Trash2 className="h-4 w-4" />
