@@ -1,18 +1,29 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { IBM_Plex_Sans, IBM_Plex_Mono, IBM_Plex_Serif } from "next/font/google"
 import { Providers } from "@/components/providers"
 import { Header } from "@/components/header"
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const ibmPlexSans = IBM_Plex_Sans({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
 })
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ["400", "500"],
   subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+})
+
+const ibmPlexSerif = IBM_Plex_Serif({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -29,7 +40,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${ibmPlexSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>
