@@ -10,6 +10,7 @@ export default auth((req) => {
     pathname.startsWith("/register") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/public") ||
+    pathname.startsWith("/docs") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon")
   ) {
